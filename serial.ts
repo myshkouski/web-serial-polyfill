@@ -144,7 +144,7 @@ class UsbEndpointUnderlyingSource implements UnderlyingByteSource {
         controller.enqueue(chunk);
       }
     } catch (error) {
-      controller.error(error.toString());
+      controller.error(error);
       this.onError_();
     }
   }
@@ -182,17 +182,17 @@ class UsbEndpointUnderlyingSink implements UnderlyingSink<Uint8Array> {
    * @param {WritableStreamDefaultController} controller
    */
   async write(
-      chunk: Uint8Array<ArrayBuffer>,
+      chunk: Uint8Array<ArrayBufferLike>,
       controller: WritableStreamDefaultController): Promise<void> {
     try {
       const result =
-          await this.device_.transferOut(this.endpoint_.endpointNumber, chunk);
+          await this.device_.transferOut(this.endpoint_.endpointNumber, new Uint8Array(chunk));
       if (result.status != 'ok') {
         controller.error(result.status);
         this.onError_();
       }
     } catch (error) {
-      controller.error(error.toString());
+      controller.error(error);
       this.onError_();
     }
   }
@@ -333,7 +333,7 @@ class SerialPortPolyfill implements BaseSerialPort {
         await this.releaseInterfaces_();
         await this.device_.close();
       }
-      throw new Error('Error setting up device: ' + error.toString());
+      throw new Error('Error setting up device', { cause: error });
     }
   }
 
