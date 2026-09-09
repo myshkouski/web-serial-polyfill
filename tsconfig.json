@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "module": "esnext",
-    "lib": ["esnext", "DOM.AsyncIterable"],
+    "lib": ["ESNext", "DOM", "DOM.AsyncIterable"],
+    "types": [
+      "w3c-web-serial",
+      "w3c-web-usb"
+    ],
     "outDir": "./dist/",
     "sourceMap": true,
     "noImplicitAny": true,
