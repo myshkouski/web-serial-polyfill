@@ -94,12 +94,10 @@ function findEndpoint(iface: USBInterface, direction: USBDirection):
  *
  * [1]: https://streams.spec.whatwg.org/#underlying-source-api
  */
-class UsbEndpointUnderlyingSource implements UnderlyingByteSource {
+class UsbEndpointUnderlyingSource implements UnderlyingDefaultSource {
   private device_: USBDevice;
   private endpoint_: USBEndpoint;
   private onError_: () => void;
-
-  type: 'bytes';
 
   /**
    * Constructs a new UnderlyingSource that will pull data from the specified
@@ -110,7 +108,6 @@ class UsbEndpointUnderlyingSource implements UnderlyingByteSource {
    * @param {function} onError function to be called on error
    */
   constructor(device: USBDevice, endpoint: USBEndpoint, onError: () => void) {
-    this.type = 'bytes';
     this.device_ = device;
     this.endpoint_ = endpoint;
     this.onError_ = onError;
@@ -121,7 +118,7 @@ class UsbEndpointUnderlyingSource implements UnderlyingByteSource {
    *
    * @param {ReadableByteStreamController} controller
    */
-  async pull(controller: ReadableByteStreamController): Promise<void> {
+  async pull(controller: ReadableStreamDefaultController<Uint8Array<ArrayBufferLike>>): Promise<void> {
     let chunkSize;
     if (controller.desiredSize) {
       const d = controller.desiredSize / this.endpoint_.packetSize;
@@ -209,9 +206,10 @@ class SerialPortPolyfill implements BaseSerialPort {
   private inEndpoint_: USBEndpoint;
   private outEndpoint_: USBEndpoint;
 
+  // @ts-expect-error TODO
   private serialOptions_: SerialOptions;
-  private readable_: ReadableStream<Uint8Array> | null;
-  private writable_: WritableStream<Uint8Array> | null;
+  private readable_: ReadableStream<Uint8Array> | null = null;
+  private writable_: WritableStream<Uint8Array> | null = null;
   private outputSignals_: SerialOutputSignals;
 
   /**
@@ -265,9 +263,10 @@ class SerialPortPolyfill implements BaseSerialPort {
                 this.readable_ = null;
               }),
           {
-            highWaterMark: this.serialOptions_.bufferSize ?? kDefaultBufferSize,
+            highWaterMark: this.serialOptions_?.bufferSize ?? kDefaultBufferSize,
           });
     }
+
     return this.readable_;
   }
 
@@ -284,9 +283,11 @@ class SerialPortPolyfill implements BaseSerialPort {
                 this.writable_ = null;
               }),
           new ByteLengthQueuingStrategy({
-            highWaterMark: this.serialOptions_.bufferSize ?? kDefaultBufferSize,
+            highWaterMark: this.serialOptions_?.bufferSize ?? kDefaultBufferSize,
           }));
+
     }
+
     return this.writable_;
   }
 
