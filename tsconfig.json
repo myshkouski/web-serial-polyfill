@@ -6,11 +6,13 @@
       "w3c-web-serial",
       "w3c-web-usb"
     ],
+    "rootDir": "./src/",
     "outDir": "./dist/",
     "sourceMap": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
     "target": "esnext",
     "declaration": true
-  }
+  },
+  "include": ["./src/**/*"]
 }
