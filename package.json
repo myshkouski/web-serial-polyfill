@@ -7,8 +7,7 @@
   "types": "./dist/serial.d.ts",
   "scripts": {
     "lint": "eslint serial.ts",
-    "build": "tsc -d",
-    "prepublish": "tsc -d"
+    "prepack": "tsc -d"
   },
   "repository": {
     "type": "git",
